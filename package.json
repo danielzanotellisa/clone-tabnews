@@ -4,13 +4,14 @@
   "description": "Clone do https://tabnews.com para o curso.dev",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run service:up && next dev",
     "lint:check": "prettier --check .",
     "lint:fix": "prettier --write . ",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "dbup": "docker compose -f ./infra/compose.yaml up -d",
-    "dbdown": "docker compose -f ./infra/compose.yaml down"
+    "service:up": "docker compose -f ./infra/compose.yaml up -d",
+    "service:down": "docker compose -f ./infra/compose.yaml down",
+    "service:stop": "docker compose -f ./infra/compose.yaml stop"
   },
   "author": "",
   "license": "MIT",
