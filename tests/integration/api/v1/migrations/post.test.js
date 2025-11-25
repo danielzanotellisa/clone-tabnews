@@ -26,4 +26,14 @@ test("POST to api/v1/migrations should return 200", async () => {
     method: "POST",
   });
   expect(result2.status).toBe(200);
+
+  const deleteMethod = await fetch("http://localhost:3000/api/v1/migrations", {
+    method: "DELETE",
+  });
+  expect(deleteMethod.status).toBe(405);
+
+  const putMethod = await fetch("http://localhost:3000/api/v1/migrations", {
+    method: "PUT",
+  });
+  expect(putMethod.status).toBe(405);
 });
