@@ -24,25 +24,31 @@ describe("POST to api/v1/migrations", () => {
           "SELECT * FROM pgmigrations;",
         );
         expect(migrationsRowsCount.rows.length).toBe(migrationNumber);
-    })
+      });
       test("For the second time", async () => {
         const result2 = await fetch("http://localhost:3000/api/v1/migrations", {
           method: "POST",
         });
-      expect(result2.status).toBe(200);
-      })
-      
+        expect(result2.status).toBe(200);
+      });
+
       test("With methods other than POST", async () => {
-        const deleteMethod = await fetch("http://localhost:3000/api/v1/migrations", {
-          method: "DELETE",
-        });
+        const deleteMethod = await fetch(
+          "http://localhost:3000/api/v1/migrations",
+          {
+            method: "DELETE",
+          },
+        );
         expect(deleteMethod.status).toBe(405);
 
-        const putMethod = await fetch("http://localhost:3000/api/v1/migrations", {
-          method: "PUT",
-        });
+        const putMethod = await fetch(
+          "http://localhost:3000/api/v1/migrations",
+          {
+            method: "PUT",
+          },
+        );
         expect(putMethod.status).toBe(405);
-      })
-    })
-  })
+      });
+    });
+  });
 });

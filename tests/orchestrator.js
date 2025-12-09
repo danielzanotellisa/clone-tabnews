@@ -16,12 +16,12 @@ async function waitForAllServices() {
         throw Error();
       }
     }
-  }  
+  }
 }
 
 async function clearDatabase() {
-    await database.query("DROP SCHEMA PUBLIC CASCADE; CREATE SCHEMA PUBLIC;")
-  }
+  await database.query("DROP SCHEMA PUBLIC CASCADE; CREATE SCHEMA PUBLIC;");
+}
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
