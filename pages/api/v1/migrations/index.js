@@ -14,7 +14,7 @@ export default async function migrations(request, response) {
     dbClient = await database.getNewClient();
     const defaultMigrationOptions = {
       dbClient: dbClient,
-      dir: join("infra", "migrations"),
+      dir: resolve(process.cwd(), "infra", "migrations"),
       dryRun: true,
       direction: "up",
       verbose: true,
