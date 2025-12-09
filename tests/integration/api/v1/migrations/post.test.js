@@ -4,7 +4,7 @@ import orchestrator from "tests/orchestrator";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await database.query("DROP SCHEMA PUBLIC CASCADE; CREATE SCHEMA PUBLIC;");
+  await orchestrator.clearDatabase();
 });
 
 describe("POST to api/v1/migrations", () => {
