@@ -1,7 +1,8 @@
 import database from "/infra/database.js";
-
+import { InternalServerError } from "infra/errors.js";
 async function status(request, response) {
-  const updatedAt = new Date().toISOString();
+  try {
+    const updatedAt = new Date().toISOString();
   const maxConnections = await database.query("SHOW max_connections;");
   const postgresVersion = await database.query("SHOW server_version;");
 
@@ -21,6 +22,13 @@ async function status(request, response) {
       },
     },
   });
+  } catch (error) {
+    const publicErrorObj = new InternalServerError({
+      cause: error
+    });
+    console.error(publicErrorObj)
+    response.status(500).json(publicErrorObj)
+  }
 }
 
 export default status;
