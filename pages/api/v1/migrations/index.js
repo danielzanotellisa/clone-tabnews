@@ -4,9 +4,7 @@ import { createRouter } from "next-connect";
 import { resolve } from "node:path";
 import controller from "infra/controller.js";
 
-const dbClient = await database.getNewClient();
 const defaultMigrationOptions = {
-  dbClient: dbClient,
   dir: resolve(process.cwd(), "infra", "migrations"),
   dryRun: true,
   direction: "up",
@@ -22,20 +20,34 @@ router.post(postHandler);
 export default router.handler(controller.errorHandlers);
 
 async function getHandler(request, response) {
-  const pendingMigrations = await migrationRunner(defaultMigrationOptions);
-  response.status(200).json(pendingMigrations);
+  let dbClient;
+  try {
+    dbClient = await database.getNewClient();
+    const pendingMigrations = await migrationRunner({
+      ...defaultMigrationOptions,
+      dbClient,
+    });
+    return response.status(200).json(pendingMigrations);
+  } finally {
+    await dbClient?.end();
+  }
 }
 
 async function postHandler(request, response) {
-  const migratedMigrations = await migrationRunner({
-    ...defaultMigrationOptions,
-    dryRun: false,
-  });
+  let dbClient;
+  try {
+    dbClient = await database.getNewClient();
+    const migratedMigrations = await migrationRunner({
+      ...defaultMigrationOptions,
+      dbClient,
+      dryRun: false,
+    });
+    if (migratedMigrations.length > 0) {
+      return response.status(201).json(migratedMigrations);
+    }
 
-  if (migratedMigrations.length > 0) {
-    response.status(201).json(migratedMigrations);
-    return;
+    return response.status(200).json(migratedMigrations);
+  } finally {
+    dbClient?.end();
   }
-
-  response.status(200).json(migratedMigrations);
 }
