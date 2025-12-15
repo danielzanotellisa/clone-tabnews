@@ -38,4 +38,5 @@ async function postHandler(request, response) {
   }
 
   response.status(200).json(migratedMigrations);
+  dbClient.end();
 }
