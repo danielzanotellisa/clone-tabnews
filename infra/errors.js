@@ -37,33 +37,33 @@ export class MethodNotAllowed extends Error {
 }
 
 export class UnprocessableEntity extends Error {
-  constructor({cause, message}) {
+  constructor({ cause, message }) {
     super(message || "Request inválida", {
       cause,
     });
-    this.name = "Unprocessable Entity",
-    this.action = "Valide os dados",
-    this.statusCode = 422;
+    ((this.name = "Unprocessable Entity"),
+      (this.action = "Valide os dados"),
+      (this.statusCode = 422));
   }
 }
 
 export class ValidationError extends Error {
-  constructor({cause,action, message}) {
-    super(message||"Erro de validação", {
+  constructor({ cause, action, message }) {
+    super(message || "Erro de validação", {
       cause,
     });
-    this.name = "Validation Error",
-    this.action = action || "Valide os dados",
-    this.statusCode = 400
+    ((this.name = "Validation Error"),
+      (this.action = action || "Valide os dados"),
+      (this.statusCode = 400));
   }
-  
+
   toJSON() {
     return {
       name: this.name,
       message: this.message,
       action: this.action,
-      status_code: this.statusCode
-    }
+      status_code: this.statusCode,
+    };
   }
 }
 
