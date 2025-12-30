@@ -9,7 +9,7 @@ async function handleMigration(options) {
     dbClient: options?.dbClient,
     dryRun: options?.dryRun,
     migrationsTable: "pgmigrations",
-    verbose: true,
+    log: () => {}
   });
 }
 
