@@ -37,13 +37,22 @@ export class MethodNotAllowed extends Error {
 }
 
 export class UnprocessableEntity extends Error {
-  constructor({ cause, message }) {
+  constructor({ action, message, cause }) {
     super(message || "Request inválida", {
       cause,
     });
     ((this.name = "Unprocessable Entity"),
-      (this.action = "Valide os dados"),
+      (this.action = action || "Valide os dados"),
       (this.statusCode = 422));
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
   }
 }
 

@@ -87,5 +87,28 @@ describe("POST to api/v1/users", () => {
         status_code: 400,
       });
     });
+    test("With incomplete data", async () => {
+      const response4 = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "teste2@email.com",
+          password: "123password",
+        }),
+      });
+
+      expect(response4.status).toBe(422);
+
+      const responseBody4 = await response4.json();
+      expect(responseBody4).toEqual({
+        name: "Unprocessable Entity",
+        action: "Preencha corretamente os campos",
+        message:
+          "Campos obrigatórios precisam ser preenchidos: nome de usuário, e-mail e senha",
+        status_code: 422,
+      });
+    });
   });
 });
