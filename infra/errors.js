@@ -42,10 +42,10 @@ export class UnprocessableEntity extends Error {
       cause,
     });
     ((this.name = "Unprocessable Entity"),
-      (this.action = action||"Valide os dados"),
+      (this.action = action || "Valide os dados"),
       (this.statusCode = 422));
   }
-  
+
   toJSON() {
     return {
       name: this.name,

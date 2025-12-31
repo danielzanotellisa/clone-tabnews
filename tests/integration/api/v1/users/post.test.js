@@ -105,7 +105,8 @@ describe("POST to api/v1/users", () => {
       expect(responseBody4).toEqual({
         name: "Unprocessable Entity",
         action: "Preencha corretamente os campos",
-        message: "Campos obrigatórios precisam ser preenchidos: nome de usuário, e-mail e senha",
+        message:
+          "Campos obrigatórios precisam ser preenchidos: nome de usuário, e-mail e senha",
         status_code: 422,
       });
     });
