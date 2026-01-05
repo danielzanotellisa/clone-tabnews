@@ -76,6 +76,26 @@ export class ValidationError extends Error {
   }
 }
 
+export class UserNotFound extends Error {
+  constructor({ cause, action, message }) {
+    super(message || "Erro ao tentar encontrar usuário", {
+      cause,
+    });
+    ((this.name = "UserNotFound"),
+      (this.action = action || "Informe um usuário válido"),
+      (this.statusCode = 404));
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
 export class ServiceError extends Error {
   constructor({ cause, message }) {
     super(message || "Serviço indisponível no momento", {
