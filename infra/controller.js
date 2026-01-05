@@ -3,6 +3,7 @@ import {
   MethodNotAllowed,
   UnprocessableEntity,
   ValidationError,
+  UserNotFound,
 } from "infra/errors.js";
 function onNoMatchHandler(request, response) {
   const error = new MethodNotAllowed();
@@ -15,6 +16,10 @@ function onErrorHandler(error, request, response) {
   }
 
   if (error instanceof UnprocessableEntity) {
+    return response.status(error.statusCode).json(error);
+  }
+
+  if (error instanceof UserNotFound) {
     return response.status(error.statusCode).json(error);
   }
 
