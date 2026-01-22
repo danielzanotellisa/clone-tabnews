@@ -1,5 +1,5 @@
 import database from "infra/database.js";
-import password from "models/password.js"
+import password from "models/password.js";
 import { ValidationError, UserNotFound } from "infra/errors";
 
 async function create(data) {
@@ -53,9 +53,9 @@ async function create(data) {
       });
     }
   }
-  
+
   async function hashPasswordInObject(data) {
-    const hashedPassword = await password.hash(data.password)
+    const hashedPassword = await password.hash(data.password);
     data.password = hashedPassword;
   }
 

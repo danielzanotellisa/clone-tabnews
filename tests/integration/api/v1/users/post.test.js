@@ -37,16 +37,22 @@ describe("POST to api/v1/users", () => {
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
-      
+
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-      
-      const userInDb = await user.findOneByUsername("daniel")
-      const comparison = await password.compare("123password", userInDb.password)
-      
+
+      const userInDb = await user.findOneByUsername("daniel");
+      const comparison = await password.compare(
+        "123password",
+        userInDb.password,
+      );
+
       expect(comparison).toBe(true);
-      
-      const wrongComparison = await password.compare("password123", userInDb.password)
+
+      const wrongComparison = await password.compare(
+        "password123",
+        userInDb.password,
+      );
       expect(wrongComparison).toBe(false);
     });
 
