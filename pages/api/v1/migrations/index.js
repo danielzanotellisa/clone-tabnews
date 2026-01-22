@@ -1,4 +1,4 @@
-import migrator from "models/migrator";
+import migrator from "models/migrator.js";
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 
