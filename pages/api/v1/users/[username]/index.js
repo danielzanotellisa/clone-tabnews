@@ -1,6 +1,5 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
-import { UnprocessableEntity } from "infra/errors.js";
 import user from "models/user.js";
 const router = createRouter();
 
