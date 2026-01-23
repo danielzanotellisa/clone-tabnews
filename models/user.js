@@ -114,7 +114,12 @@ async function update(username, data) {
   if (data.email !== undefined) {
     await validateUniqueEmail(data.email);
   }
-  return currentUser;
+  
+  const userWithUpdatedValues = {...currentUser, ...data}
+  
+  const updatedUser = await runUpdateQuery(userWithUpdatedValues)
+
+  return updatedUser;
 }
 
 const user = {

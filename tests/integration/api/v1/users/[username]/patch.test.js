@@ -160,5 +160,44 @@ describe("PATCH to api/v1/users", () => {
 
       expect(response.status).toBe(200);
     });
+    
+    test("With unique and valid data", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "fakename5",
+          email: "teste5@email.com",
+          password: "123password",
+        }),
+      });
+      
+      const patchResponse = await fetch("http://localhost:3000/api/v1/users/fakename5", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "fakeNameEdited5"
+        }),
+      });
+      
+      expect(patchResponse.status).toBe(200);
+      
+      const responseBody = await patchResponse.json();
+      expect(responseBody).toEqual({
+        id: responseBody.id,
+        username: "fakeNameEdited5",
+        email: "teste5@email.com",
+        password: responseBody.password,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+    })
   });
 });
