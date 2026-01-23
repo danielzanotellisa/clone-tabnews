@@ -2,17 +2,9 @@ import database from "infra/database.js";
 import password from "models/password.js";
 import { ValidationError, UserNotFound } from "infra/errors";
 
-async function create(data) {
-  await validateUniqueEmail(data.email);
-  await validateUniqueUserName(data.username);
-  await hashPasswordInObject(data);
-
-  const newUser = await runInsertQuery(data);
-  return newUser;
-
-  async function validateUniqueEmail(userEmail) {
-    const results = await database.query({
-      text: `
+async function validateUniqueEmail(userEmail) {
+  const results = await database.query({
+    text: `
         SELECT 
           email
         FROM 
@@ -21,38 +13,46 @@ async function create(data) {
           LOWER(email) = LOWER($1)
         LIMIT 1
       ;`,
-      values: [userEmail],
+    values: [userEmail],
+  });
+
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      action: "Utilize um email diferente",
+      message: "O email utilizado ja está em uso",
     });
-
-    if (results.rowCount > 0) {
-      throw new ValidationError({
-        action: "Utilize um email diferente",
-        message: "O email utilizado ja está em uso",
-      });
-    }
   }
+}
 
-  async function validateUniqueUserName(userName) {
-    const results = await database.query({
-      text: `
-        SELECT 
-          username
-        FROM 
-          users
-        WHERE 
-          LOWER(username) = LOWER($1)
-        LIMIT 1
-      ;`,
-      values: [userName],
+async function validateUniqueUserName(userName) {
+  const results = await database.query({
+    text: `
+      SELECT 
+        username
+      FROM 
+        users
+      WHERE 
+        LOWER(username) = LOWER($1)
+      LIMIT 1
+    ;`,
+    values: [userName],
+  });
+
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      action: "Utilize um nome de usuário diferente",
+      message: "O nome de usuário ja está em uso",
     });
-
-    if (results.rowCount > 0) {
-      throw new ValidationError({
-        action: "Utilize um nome de usuário diferente",
-        message: "O nome de usuário ja está em uso",
-      });
-    }
   }
+}
+
+async function create(data) {
+  await validateUniqueUserName(data.username);
+  await validateUniqueEmail(data.email);
+  await hashPasswordInObject(data);
+
+  const newUser = await runInsertQuery(data);
+  return newUser;
 
   async function hashPasswordInObject(data) {
     const hashedPassword = await password.hash(data.password);
@@ -103,9 +103,24 @@ async function findOneByUsername(username) {
 
   return userFound;
 }
+async function update(username, data) {
+  const currentUser = await findOneByUsername(username);
+  if (
+    data.username !== undefined &&
+    username.toLowerCase() !== data.username.toLowerCase()
+  ) {
+    await validateUniqueUserName(data.username);
+  }
+  if (data.email !== undefined) {
+    await validateUniqueEmail(data.email);
+  }
+  return currentUser;
+}
+
 const user = {
   create,
   findOneByUsername,
+  update,
 };
 
 export default user;
