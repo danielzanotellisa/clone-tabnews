@@ -3,8 +3,8 @@ import password from "models/password.js";
 import { ValidationError, UserNotFound } from "infra/errors";
 
 async function validateUniqueEmail(userEmail) {
-    const results = await database.query({
-      text: `
+  const results = await database.query({
+    text: `
         SELECT 
           email
         FROM 
@@ -13,15 +13,15 @@ async function validateUniqueEmail(userEmail) {
           LOWER(email) = LOWER($1)
         LIMIT 1
       ;`,
-      values: [userEmail],
-    });
+    values: [userEmail],
+  });
 
-    if (results.rowCount > 0) {
-      throw new ValidationError({
-        action: "Utilize um email diferente",
-        message: "O email utilizado ja está em uso",
-      });
-    }
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      action: "Utilize um email diferente",
+      message: "O email utilizado ja está em uso",
+    });
+  }
 }
 
 async function validateUniqueUserName(userName) {
@@ -105,7 +105,10 @@ async function findOneByUsername(username) {
 }
 async function update(username, data) {
   const currentUser = await findOneByUsername(username);
-  if (data.username !== undefined && username.toLowerCase() !== data.username.toLowerCase()) {
+  if (
+    data.username !== undefined &&
+    username.toLowerCase() !== data.username.toLowerCase()
+  ) {
     await validateUniqueUserName(data.username);
   }
   if (data.email !== undefined) {

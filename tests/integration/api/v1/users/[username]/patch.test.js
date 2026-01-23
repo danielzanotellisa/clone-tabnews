@@ -12,17 +12,19 @@ beforeAll(async () => {
 describe("PATCH to api/v1/users", () => {
   describe("Anonymous user", () => {
     test("With nonexisting 'username'", async () => {
-      
-      const response = await fetch("http://localhost:3000/api/v1/users/wrongUser", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/wrongUser",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: "danielPatch",
+          }),
         },
-        body: JSON.stringify({
-          username: "danielPatch",
-        }),
-      })
-      
+      );
+
       expect(response.status).toBe(404);
 
       const responseBody = await response.json();
@@ -34,9 +36,8 @@ describe("PATCH to api/v1/users", () => {
         status_code: 404,
       });
     });
-    
+
     test("With already existing 'username'", async () => {
-      
       await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
@@ -48,7 +49,7 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
+
       await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
@@ -60,17 +61,20 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
-      const response = await fetch("http://localhost:3000/api/v1/users/fakename2", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/fakename2",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: "fakename",
+          }),
         },
-        body: JSON.stringify({
-          username: "fakename",
-        }),
-      });
-      
+      );
+
       expect(response.status).toBe(400);
 
       const responseBody = await response.json();
@@ -81,9 +85,8 @@ describe("PATCH to api/v1/users", () => {
         status_code: 400,
       });
     });
-    
+
     test("With already existing 'email'", async () => {
-      
       await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
@@ -95,7 +98,7 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
+
       await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
@@ -107,17 +110,20 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
-      const response = await fetch("http://localhost:3000/api/v1/users/fakename2", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/fakename2",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: "teste@email.com",
+          }),
         },
-        body: JSON.stringify({
-          email: "teste@email.com",
-        }),
-      });
-      
+      );
+
       expect(response.status).toBe(400);
 
       const responseBody = await response.json();
@@ -128,9 +134,8 @@ describe("PATCH to api/v1/users", () => {
         status_code: 400,
       });
     });
-    
+
     test("Can use the same 'username' in different case", async () => {
-      
       await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
@@ -142,19 +147,21 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
-      const response = await fetch("http://localhost:3000/api/v1/users/fakename4", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/fakename4",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: "FakeName4",
+          }),
         },
-        body: JSON.stringify({
-          username: "FakeName4",
-        }),
-      });
-      
+      );
+
       expect(response.status).toBe(200);
     });
-    
   });
 });
