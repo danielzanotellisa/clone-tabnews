@@ -114,7 +114,35 @@ async function update(username, data) {
   if (data.email !== undefined) {
     await validateUniqueEmail(data.email);
   }
+<<<<<<< Updated upstream
   return currentUser;
+=======
+  
+  const userWithUpdatedValues = {...currentUser, ...data}
+  
+  const updatedUser = await runUpdateQuery(userWithUpdatedValues)
+  
+  async function runUpdateQuery(userWithNewValues) {
+    const results = await database.query({
+      text:` 
+        UPDATE
+          users
+        SET
+          username = $2,
+          email = $3,
+          password = $4,
+          updated_at = timezone('utc', now)
+        WHERE 
+          id = $1
+        RETURNING *
+        
+      `,
+      value:[userWithNewValues.id, userWithNewValues.username, userWithNewValues.email, userWithNewValues.password]
+    })
+  }
+
+  return updatedUser;
+>>>>>>> Stashed changes
 }
 
 const user = {
