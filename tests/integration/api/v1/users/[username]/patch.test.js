@@ -1,4 +1,6 @@
 import orchestrator from "tests/orchestrator.js";
+import user from "models/user.js";
+import password from "models/password.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -159,6 +161,152 @@ describe("PATCH to api/v1/users", () => {
       );
 
       expect(response.status).toBe(200);
+    });
+
+    test("With unique and valid 'username'", async () => {
+      await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "fakename5",
+          email: "teste5@email.com",
+          password: "123password",
+        }),
+      });
+
+      const patchResponse = await fetch(
+        "http://localhost:3000/api/v1/users/fakename5",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: "fakeNameEdited5",
+          }),
+        },
+      );
+
+      expect(patchResponse.status).toBe(200);
+
+      const responseBody = await patchResponse.json();
+      expect(responseBody).toEqual({
+        id: responseBody.id,
+        username: "fakeNameEdited5",
+        email: "teste5@email.com",
+        password: responseBody.password,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      expect(responseBody.created_at < responseBody.updated_at).toBe(true);
+    });
+
+    test("With unique and valid 'email'", async () => {
+      await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "fakeName6",
+          email: "teste6@email.com",
+          password: "123password",
+        }),
+      });
+
+      const patchResponse = await fetch(
+        "http://localhost:3000/api/v1/users/fakename6",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: "teste7@email.com",
+          }),
+        },
+      );
+
+      expect(patchResponse.status).toBe(200);
+
+      const responseBody = await patchResponse.json();
+      expect(responseBody).toEqual({
+        id: responseBody.id,
+        username: "fakeName6",
+        email: "teste7@email.com",
+        password: responseBody.password,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      expect(responseBody.created_at < responseBody.updated_at).toBe(true);
+    });
+
+    test("With new password'", async () => {
+      await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "userNewPassword1",
+          email: "userNewPassword1@email.com",
+          password: "123password",
+        }),
+      });
+
+      const patchResponse = await fetch(
+        "http://localhost:3000/api/v1/users/userNewPassword1",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: "password123",
+          }),
+        },
+      );
+
+      expect(patchResponse.status).toBe(200);
+
+      const responseBody = await patchResponse.json();
+      expect(responseBody).toEqual({
+        id: responseBody.id,
+        username: responseBody.username,
+        email: responseBody.email,
+        password: responseBody.password,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      expect(responseBody.created_at < responseBody.updated_at).toBe(true);
+
+      const userInDb = await user.findOneByUsername("userNewPassword1");
+      const comparison = await password.compare(
+        "password123",
+        userInDb.password,
+      );
+
+      expect(comparison).toBe(true);
+
+      const wrongComparison = await password.compare(
+        "123password",
+        userInDb.password,
+      );
+      expect(wrongComparison).toBe(false);
     });
   });
 });

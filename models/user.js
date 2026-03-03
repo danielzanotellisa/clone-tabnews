@@ -46,18 +46,18 @@ async function validateUniqueUserName(userName) {
   }
 }
 
+async function hashPasswordInObject(data) {
+  const hashedPassword = await password.hash(data.password);
+  return hashedPassword;
+}
+
 async function create(data) {
   await validateUniqueUserName(data.username);
   await validateUniqueEmail(data.email);
-  await hashPasswordInObject(data);
+  data.password = await hashPasswordInObject(data);
 
   const newUser = await runInsertQuery(data);
   return newUser;
-
-  async function hashPasswordInObject(data) {
-    const hashedPassword = await password.hash(data.password);
-    data.password = hashedPassword;
-  }
 
   async function runInsertQuery(data) {
     const userCreated = await database.query({
@@ -106,15 +106,51 @@ async function findOneByUsername(username) {
 async function update(username, data) {
   const currentUser = await findOneByUsername(username);
   if (
-    data.username !== undefined &&
+    "username" in data &&
     username.toLowerCase() !== data.username.toLowerCase()
   ) {
     await validateUniqueUserName(data.username);
   }
-  if (data.email !== undefined) {
+  if ("email" in data) {
     await validateUniqueEmail(data.email);
   }
-  return currentUser;
+
+  if ("password" in data) {
+    data.password = await hashPasswordInObject(data);
+  }
+
+  const userWithUpdatedValues = { ...currentUser, ...data };
+
+  const updatedUser = await runUpdateQuery(userWithUpdatedValues);
+
+  async function runUpdateQuery(userWithNewValues) {
+    const results = await database.query({
+      text: ` 
+        UPDATE
+          users
+        SET
+          username = $2,
+          email = $3,
+          password = $4,
+          updated_at = timezone('utc', now())
+        WHERE 
+          id = $1
+        RETURNING 
+          *
+        
+      `,
+      values: [
+        userWithNewValues.id,
+        userWithNewValues.username,
+        userWithNewValues.email,
+        userWithNewValues.password,
+      ],
+    });
+
+    return results.rows[0];
+  }
+
+  return updatedUser;
 }
 
 const user = {
