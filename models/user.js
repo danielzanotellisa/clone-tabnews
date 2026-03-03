@@ -47,8 +47,8 @@ async function validateUniqueUserName(userName) {
 }
 
 async function hashPasswordInObject(data) {
-    const hashedPassword = await password.hash(data.password);
-    return hashedPassword
+  const hashedPassword = await password.hash(data.password);
+  return hashedPassword;
 }
 
 async function create(data) {
@@ -58,7 +58,6 @@ async function create(data) {
 
   const newUser = await runInsertQuery(data);
   return newUser;
-
 
   async function runInsertQuery(data) {
     const userCreated = await database.query({
@@ -115,18 +114,18 @@ async function update(username, data) {
   if ("email" in data) {
     await validateUniqueEmail(data.email);
   }
-  
-  if("password" in data) {
+
+  if ("password" in data) {
     data.password = await hashPasswordInObject(data);
   }
-  
-  const userWithUpdatedValues = {...currentUser, ...data}
-  
-  const updatedUser = await runUpdateQuery(userWithUpdatedValues)
-  
+
+  const userWithUpdatedValues = { ...currentUser, ...data };
+
+  const updatedUser = await runUpdateQuery(userWithUpdatedValues);
+
   async function runUpdateQuery(userWithNewValues) {
     const results = await database.query({
-      text:` 
+      text: ` 
         UPDATE
           users
         SET
@@ -140,14 +139,17 @@ async function update(username, data) {
           *
         
       `,
-      values:[userWithNewValues.id, userWithNewValues.username, userWithNewValues.email, userWithNewValues.password]
+      values: [
+        userWithNewValues.id,
+        userWithNewValues.username,
+        userWithNewValues.email,
+        userWithNewValues.password,
+      ],
     });
-    
+
     return results.rows[0];
   }
-  
-  
-  
+
   return updatedUser;
 }
 

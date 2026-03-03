@@ -162,9 +162,9 @@ describe("PATCH to api/v1/users", () => {
 
       expect(response.status).toBe(200);
     });
-    
+
     test("With unique and valid 'username'", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+      await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,19 +175,22 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
-      const patchResponse = await fetch("http://localhost:3000/api/v1/users/fakename5", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+
+      const patchResponse = await fetch(
+        "http://localhost:3000/api/v1/users/fakename5",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: "fakeNameEdited5",
+          }),
         },
-        body: JSON.stringify({
-          username: "fakeNameEdited5"
-        }),
-      });
-      
+      );
+
       expect(patchResponse.status).toBe(200);
-      
+
       const responseBody = await patchResponse.json();
       expect(responseBody).toEqual({
         id: responseBody.id,
@@ -200,12 +203,12 @@ describe("PATCH to api/v1/users", () => {
 
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-      
+
       expect(responseBody.created_at < responseBody.updated_at).toBe(true);
-    })
-    
+    });
+
     test("With unique and valid 'email'", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+      await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -216,19 +219,22 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
-      const patchResponse = await fetch("http://localhost:3000/api/v1/users/fakename6", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+
+      const patchResponse = await fetch(
+        "http://localhost:3000/api/v1/users/fakename6",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: "teste7@email.com",
+          }),
         },
-        body: JSON.stringify({
-          email: "teste7@email.com"
-        }),
-      });
-      
+      );
+
       expect(patchResponse.status).toBe(200);
-      
+
       const responseBody = await patchResponse.json();
       expect(responseBody).toEqual({
         id: responseBody.id,
@@ -241,12 +247,12 @@ describe("PATCH to api/v1/users", () => {
 
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-      
+
       expect(responseBody.created_at < responseBody.updated_at).toBe(true);
-    })
-    
+    });
+
     test("With new password'", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+      await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -257,19 +263,22 @@ describe("PATCH to api/v1/users", () => {
           password: "123password",
         }),
       });
-      
-      const patchResponse = await fetch("http://localhost:3000/api/v1/users/userNewPassword1", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+
+      const patchResponse = await fetch(
+        "http://localhost:3000/api/v1/users/userNewPassword1",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: "password123",
+          }),
         },
-        body: JSON.stringify({
-          password: "password123"
-        }),
-      });
-      
+      );
+
       expect(patchResponse.status).toBe(200);
-      
+
       const responseBody = await patchResponse.json();
       expect(responseBody).toEqual({
         id: responseBody.id,
@@ -282,9 +291,9 @@ describe("PATCH to api/v1/users", () => {
 
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-      
+
       expect(responseBody.created_at < responseBody.updated_at).toBe(true);
-      
+
       const userInDb = await user.findOneByUsername("userNewPassword1");
       const comparison = await password.compare(
         "password123",
@@ -298,6 +307,6 @@ describe("PATCH to api/v1/users", () => {
         userInDb.password,
       );
       expect(wrongComparison).toBe(false);
-    })
+    });
   });
 });
