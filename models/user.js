@@ -122,7 +122,10 @@ async function findOneByEmail(email) {
       values: [email],
     });
     if (user.rowCount < 1) {
-      return null;
+      throw new UserNotFound({
+        action: "Verifique se o nome de usuário está correto",
+        message: "Usuário informado não existe",
+      });
     }
 
     return user.rows[0];
