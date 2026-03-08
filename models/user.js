@@ -103,6 +103,37 @@ async function findOneByUsername(username) {
 
   return userFound;
 }
+
+async function findOneByEmail(email) {
+  const userFound = await runSelectQuery(email);
+
+  async function runSelectQuery(email) {
+    const user = await database.query({
+      text: `
+      SELECT
+        *
+      FROM
+        users
+      WHERE
+        LOWER(email) = LOWER($1)
+      LIMIT 
+        1
+    ;`,
+      values: [email],
+    });
+    if (user.rowCount < 1) {
+      throw new UserNotFound({
+        action: "Verifique se o nome de usuário está correto",
+        message: "Usuário informado não existe",
+      });
+    }
+
+    return user.rows[0];
+  }
+
+  return userFound;
+}
+
 async function update(username, data) {
   const currentUser = await findOneByUsername(username);
   if (
@@ -156,6 +187,7 @@ async function update(username, data) {
 const user = {
   create,
   findOneByUsername,
+  findOneByEmail,
   update,
 };
 

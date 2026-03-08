@@ -7,8 +7,8 @@ async function hash(password) {
   return await bcryptjs.hash(password, saltAndPepper);
 }
 
-async function compare(providedPassword, hash) {
-  return await bcryptjs.compare(providedPassword, hash);
+async function compare(providedPassword, storedPassword) {
+  return await bcryptjs.compare(providedPassword, storedPassword);
 }
 
 const password = {

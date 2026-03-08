@@ -76,6 +76,26 @@ export class ValidationError extends Error {
   }
 }
 
+export class UnauthorizedError extends Error {
+  constructor({ cause, action, message }) {
+    super(message || "Não autorizado", {
+      cause,
+    });
+    ((this.name = "UnauthorizedError"),
+      (this.action = action || "Verifique suas credenciais"),
+      (this.statusCode = 401));
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
 export class UserNotFound extends Error {
   constructor({ cause, action, message }) {
     super(message || "Erro ao tentar encontrar usuário", {
