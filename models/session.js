@@ -1,32 +1,35 @@
-import user from "models/user.js";
-import password from "models/password.js";
-import { UnprocessableEntity, UnauthorizedError } from "infra/errors.js";
+import database from "infra/database.js";
+import crypto from "node:crypto";
 
-async function createSession(userInput) {
-  const userInDb = await user.findOneByEmail(userInput.email);
+const EXPIRATION_IN_MILLISECONDS = 60 * 60 * 24 * 30 * 1000; // 30 days;
 
-  if (userInDb === null) {
-    throw new UnauthorizedError({
-      message: "Email ou senha incorretos",
-      action: "Verifique suas credenciais e tente novamente",
+async function create(userId) {
+  const token = crypto.randomBytes(48).toString("hex");
+
+  const expiresAt = new Date(Date.now() + EXPIRATION_IN_MILLISECONDS);
+
+  const session = await runInsertQuery(token, userId, expiresAt);
+  return session;
+
+  async function runInsertQuery(token, userId, expiresAt) {
+    const results = await database.query({
+      text: `
+        INSERT INTO sessions
+          (token, user_id, expires_at)
+        VALUES 
+          ($1, $2, $3)
+        RETURNING 
+          *
+      ;`,
+      values: [token, userId, expiresAt],
     });
-  }
-
-  const passwordMatch = await password.compare(
-    userInput.password,
-    userInDb.password,
-  );
-
-  if (!passwordMatch) {
-    throw new UnauthorizedError({
-      message: "Email ou senha incorretos",
-      action: "Verifique suas credenciais e tente novamente",
-    });
+    return results.rows[0];
   }
 }
 
 const session = {
-  createSession,
+  create,
+  EXPIRATION_IN_MILLISECONDS,
 };
 
 export default session;
