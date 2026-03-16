@@ -74,6 +74,36 @@ async function create(data) {
     return userCreated.rows[0];
   }
 }
+
+async function findOneById(id) {
+  const userFound = await runSelectQuery(id);
+  return userFound;
+
+  async function runSelectQuery(id) {
+    const user = await database.query({
+      text: `
+      SELECT
+        id, username, email, created_at, updated_at
+      FROM
+        users
+      WHERE
+        id = $1
+      LIMIT 
+        1
+    ;`,
+      values: [id],
+    });
+    if (user.rowCount < 1) {
+      throw new UserNotFound({
+        action: "Verifique se o id do usuário está correto",
+        message: "Usuário informado não existe",
+      });
+    }
+
+    return user.rows[0];
+  }
+}
+
 async function findOneByUsername(username) {
   const userFound = await runSelectQuery(username);
 
@@ -188,6 +218,7 @@ const user = {
   create,
   findOneByUsername,
   findOneByEmail,
+  findOneById,
   update,
 };
 
