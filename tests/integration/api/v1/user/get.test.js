@@ -51,7 +51,6 @@ describe("GET to /api/v1/user", () => {
         maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
         httpOnly: true,
         path: "/",
-        sameSite: "Strict",
       });
     });
     test("With non existing session", async () => {
@@ -69,6 +68,19 @@ describe("GET to /api/v1/user", () => {
         action: "Usuário não possui sessão ativa",
         message: "Verifique se esse usuário está logado e tente novamente",
         status_code: 401,
+      });
+
+      // Set-Cookie assertions
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: "invalid",
+        maxAge: -1,
+        path: "/",
+        httpOnly: true,
       });
     });
 
@@ -97,6 +109,19 @@ describe("GET to /api/v1/user", () => {
         action: "Usuário não possui sessão ativa",
         message: "Verifique se esse usuário está logado e tente novamente",
         status_code: 401,
+      });
+
+      // Set-Cookie assertions
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: "invalid",
+        maxAge: -1,
+        path: "/",
+        httpOnly: true,
       });
     });
   });

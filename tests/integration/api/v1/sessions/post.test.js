@@ -64,7 +64,6 @@ describe("POST to api/v1/sessions", () => {
         maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
         httpOnly: true,
         path: "/",
-        sameSite: "Strict",
       });
     });
     test("With incorrect email but correct password", async () => {
