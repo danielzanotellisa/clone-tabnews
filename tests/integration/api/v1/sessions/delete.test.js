@@ -1,5 +1,4 @@
 import orchestrator from "tests/orchestrator.js";
-import { version as uuidVersion } from "uuid";
 import session from "models/session.js";
 import setCookieParser from "set-cookie-parser";
 
@@ -81,7 +80,6 @@ describe("DELETE to api/v1/sessions", () => {
         maxAge: -1,
         httpOnly: true,
         path: "/",
-        
       });
 
       const response2 = await fetch("http://localhost:3000/api/v1/user", {
