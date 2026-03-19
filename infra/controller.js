@@ -28,6 +28,7 @@ function onErrorHandler(error, request, response) {
   }
 
   if (error instanceof UnauthorizedError) {
+    clearSessionCookie(response);
     return response.status(error.statusCode).json(error);
   }
 
@@ -45,8 +46,18 @@ function setSessionCookie(response, sessionToken) {
     httpOnly: true,
     maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
   });
+  response.setHeader("Set-Cookie", setCookie);
+}
+
+function clearSessionCookie(response) {
+  const setCookie = cookie.serialize("session_id", "invalid", {
+    path: "/",
+    httpOnly: true,
+    maxAge: -1,
+    secure: process.env.NODE_ENV === "production",
+  });
+
   response.setHeader("Set-Cookie", setCookie);
 }
 
@@ -56,6 +67,7 @@ const controller = {
     onNoMatch: onNoMatchHandler,
   },
   setSessionCookie,
+  clearSessionCookie,
 };
 
 export default controller;

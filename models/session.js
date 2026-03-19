@@ -28,6 +28,24 @@ async function create(userId) {
   }
 }
 
+async function runUpdateQuery(id, newExpiresAt) {
+  const results = await database.query({
+    text: `
+        UPDATE 
+          sessions
+        SET 
+          expires_at = $1, 
+          updated_at = NOW()
+        WHERE 
+          id = $2
+        RETURNING 
+          *
+      ;`,
+    values: [newExpiresAt, id],
+  });
+  return results.rows[0];
+}
+
 async function findOneValidByToken(token) {
   const validSession = await runSelectQuery(token);
   return validSession;
@@ -65,24 +83,13 @@ async function renew(id) {
 
   const updatedSession = await runUpdateQuery(id, newExpiresAt);
   return updatedSession;
+}
 
-  async function runUpdateQuery(id, newExpiresAt) {
-    const results = await database.query({
-      text: `
-        UPDATE 
-          sessions
-        SET 
-          expires_at = $1, 
-          updated_at = NOW()
-        WHERE 
-          id = $2
-        RETURNING 
-          *
-      ;`,
-      values: [newExpiresAt, id],
-    });
-    return results.rows[0];
-  }
+async function expireById(id) {
+  const newExpiresAt = new Date(Date.now() - 31557600000);
+  const expiredSession = await runUpdateQuery(id, newExpiresAt);
+
+  return expiredSession;
 }
 
 const session = {
@@ -90,6 +97,7 @@ const session = {
   EXPIRATION_IN_MILLISECONDS,
   findOneValidByToken,
   renew,
+  expireById,
 };
 
 export default session;
