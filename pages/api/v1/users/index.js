@@ -1,6 +1,7 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import user from "models/user.js";
+import activation from "models/activation.js";
 import { UnprocessableEntity } from "infra/errors.js";
 const router = createRouter();
 
@@ -12,7 +13,7 @@ async function postHandler(request, response) {
   validateUserRequest(request.body);
 
   const userCreated = await user.create(request.body);
-
+  await activation.sendEmailToUser(userCreated);
   return response.status(201).json(userCreated);
 }
 
