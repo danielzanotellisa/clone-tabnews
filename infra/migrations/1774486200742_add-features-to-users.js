@@ -1,5 +1,13 @@
 exports.shorthands = undefined;
 
-exports.up = (pgm) => {};
+exports.up = (pgm) => {
+  pgm.addColumn("users", {
+    features: {
+      type: "varchar[]",
+      notNull: true,
+      default: "{}",
+    },
+  });
+};
 
 exports.down = false;
