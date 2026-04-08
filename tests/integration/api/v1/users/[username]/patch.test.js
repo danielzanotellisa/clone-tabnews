@@ -151,7 +151,7 @@ describe("PATCH to api/v1/users", () => {
         username: "fakeNameEdited5",
         email: responseBody.email,
         password: responseBody.password,
-        features: [],
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -186,7 +186,7 @@ describe("PATCH to api/v1/users", () => {
         username: responseBody.username,
         email: "teste7@email.com",
         password: responseBody.password,
-        features: [],
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -221,7 +221,7 @@ describe("PATCH to api/v1/users", () => {
         username: responseBody.username,
         email: responseBody.email,
         password: responseBody.password,
-        features: [],
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
