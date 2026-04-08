@@ -56,6 +56,7 @@ async function create(data) {
   await validateUniqueEmail(data.email);
   data.password = await hashPasswordInObject(data);
   injectDefaultFeaturesInObject(data);
+
   const newUser = await runInsertQuery(data);
   return newUser;
 
