@@ -1,4 +1,3 @@
-import password from "models/password";
 import orchestrator from "tests/orchestrator.js";
 import activation from "models/activation.js";
 
@@ -42,12 +41,15 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     const lastEmail = await orchestrator.getLastEmail();
 
+    const activationToken = await activation.findOneByUserId(
+      createUserResponseBody.id,
+    );
+
     expect(lastEmail.sender).toEqual("<contato@tabracing.com.br>");
     expect(lastEmail.recipients[0]).toEqual("<registration@flow.com>");
     expect(lastEmail.subject).toEqual("Ative seu cadastro no TabRacing");
     expect(lastEmail.text).toContain("RegistrationFlow");
-
-    console.log(lastEmail.text);
+    expect(lastEmail.text).toContain(activationToken.id);
   });
 
   test("Receive activation email", async () => {});
