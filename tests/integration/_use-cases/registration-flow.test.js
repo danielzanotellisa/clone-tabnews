@@ -41,15 +41,14 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     const lastEmail = await orchestrator.getLastEmail();
 
-    const activationToken = await activation.findOneByUserId(
-      createUserResponseBody.id,
-    );
+    const activationToken = await orchestrator.getValidToken(lastEmail.text);
 
     expect(lastEmail.sender).toEqual("<contato@tabracing.com.br>");
     expect(lastEmail.recipients[0]).toEqual("<registration@flow.com>");
     expect(lastEmail.subject).toEqual("Ative seu cadastro no TabRacing");
     expect(lastEmail.text).toContain("RegistrationFlow");
     expect(lastEmail.text).toContain(activationToken.id);
+    expect(activationToken.user_id).toEqual(createUserResponseBody.id);
   });
 
   test("Receive activation email", async () => {});
