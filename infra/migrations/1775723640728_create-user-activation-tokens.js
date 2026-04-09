@@ -12,22 +12,22 @@ exports.up = (pgm) => {
       notNull: true,
     },
     used_at: {
-      type: "timestamp",
+      type: "timestamptz",
       notNull: false,
     },
-    expirest_at: {
-      type: "timestamp",
+    expires_at: {
+      type: "timestamptz",
       notNull: true,
     },
     created_at: {
-      type: "timestamp",
+      type: "timestamptz",
       notNull: true,
-      default: pgm.func("now()"),
+      default: pgm.func("timezone('utc',now())"),
     },
     updated_at: {
-      type: "timestamp",
+      type: "timestamptz",
       notNull: true,
-      default: pgm.func("now()"),
+      default: pgm.func("timezone('utc',now())"),
     },
   });
 };
