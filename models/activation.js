@@ -22,7 +22,7 @@ async function create(userId) {
     const tokenCreated = await database.query({
       text: `
           INSERT INTO user_activation_tokens 
-            (user_id, expirest_at) 
+            (user_id, expires_at) 
           VALUES 
             ($1, $2)
           RETURNING
@@ -33,12 +33,11 @@ async function create(userId) {
     return tokenCreated.rows[0];
   }
 }
-
-async function findOneByUserId(userId) {
-  const tokenFound = await runSelectQuery(userId);
+async function findOneValidById(id) {
+  const tokenFound = await runSelectQuery(id);
   return tokenFound;
 
-  async function runSelectQuery(userId) {
+  async function runSelectQuery(id) {
     const token = await database.query({
       text: `
       SELECT
@@ -46,11 +45,15 @@ async function findOneByUserId(userId) {
       FROM
         user_activation_tokens
       WHERE
-        user_id = $1
-      LIMIT
+        id = $1 
+      AND
+        expires_at > NOW() 
+      AND
+        used_at IS NULL
+      LIMIT 
         1
     ;`,
-      values: [userId],
+      values: [id],
     });
     return token.rows[0];
   }
@@ -59,7 +62,7 @@ async function findOneByUserId(userId) {
 const activation = {
   sendEmailToUser,
   create,
-  findOneByUserId,
+  findOneValidById,
 };
 
 export default activation;
