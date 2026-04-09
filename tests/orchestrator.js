@@ -4,6 +4,7 @@ import database from "infra/database.js";
 import migrator from "models/migrator.js";
 import user from "models/user.js";
 import session from "models/session.js";
+import activation from "models/activation.js";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
@@ -66,6 +67,18 @@ async function deleteEmails() {
   });
 }
 
+async function getValidToken(email) {
+  const token = email.match(/(?<==)([a-z-A-Z-0-9\-]+)/i)[0];
+
+  if (!token) {
+    return null;
+  }
+  token;
+  const validToken = await activation.findOneValidById(token);
+  validToken;
+  return validToken;
+}
+
 async function getLastEmail() {
   const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
   const emailListBody = await emailListResponse.json();
@@ -92,6 +105,7 @@ const orchestrator = {
   createSession,
   deleteEmails,
   getLastEmail,
+  getValidToken,
 };
 
 export default orchestrator;
