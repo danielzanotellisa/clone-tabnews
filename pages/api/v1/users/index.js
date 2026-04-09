@@ -13,7 +13,9 @@ async function postHandler(request, response) {
   validateUserRequest(request.body);
 
   const userCreated = await user.create(request.body);
-  await activation.sendEmailToUser(userCreated);
+
+  const activationToken = await activation.create(userCreated.id);
+  await activation.sendEmailToUser(userCreated, activationToken);
   return response.status(201).json(userCreated);
 }
 
