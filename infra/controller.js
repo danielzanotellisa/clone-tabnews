@@ -5,6 +5,7 @@ import {
   ValidationError,
   UserNotFound,
   UnauthorizedError,
+  NotFoundError,
 } from "infra/errors.js";
 import session from "models/session.js";
 import * as cookie from "cookie";
@@ -20,6 +21,10 @@ function onErrorHandler(error, request, response) {
   }
 
   if (error instanceof UnprocessableEntity) {
+    return response.status(error.statusCode).json(error);
+  }
+  
+  if (error instanceof NotFoundError) {
     return response.status(error.statusCode).json(error);
   }
 

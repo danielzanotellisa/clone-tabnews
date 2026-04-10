@@ -96,6 +96,26 @@ export class UnauthorizedError extends Error {
   }
 }
 
+export class NotFoundError extends Error {
+  constructor({ cause, action, message }) {
+    super(message || "Recurso não encontrado", {
+      cause,
+    });
+    ((this.name = "NotFoundError"),
+      (this.action = action || "Verifique o recurso solicitado"),
+      (this.statusCode = 404));
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
 export class UserNotFound extends Error {
   constructor({ cause, action, message }) {
     super(message || "Erro ao tentar encontrar usuário", {
