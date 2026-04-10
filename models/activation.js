@@ -1,6 +1,9 @@
 import email from "infra/email.js";
 import database from "infra/database.js";
 import webserver from "infra/webserver.js";
+import { run } from "jest";
+import user from "models/user.js";
+import { NotFoundError } from "infra/errors.js";
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 15 * 1000;
 async function sendEmailToUser(user, activationToken) {
@@ -47,7 +50,7 @@ async function findOneValidById(id) {
       WHERE
         id = $1 
       AND
-        expires_at > NOW() 
+        expires_at > timezone('utc', now())
       AND
         used_at IS NULL
       LIMIT 
@@ -55,14 +58,51 @@ async function findOneValidById(id) {
     ;`,
       values: [id],
     });
+    if (token.rows.length === 0) {
+      throw new NotFoundError({
+        message: "Token de ativação utilizad não encontrado",
+        action: "Faça um novo cadastro",
+      });
+    }
+
     return token.rows[0];
   }
+}
+
+async function markAsUsed(id) {
+  const usedToken = await runUpdateQuery(id);
+  return usedToken;
+
+  async function runUpdateQuery(id) {
+    const token = await database.query({
+      text: `
+        UPDATE 
+          user_activation_tokens
+        SET 
+          used_at = timezone('utc', now()),
+          updated_at = timezone('utc', now())
+        WHERE 
+          id = $1
+        RETURNING
+          *
+      ;`,
+      values: [id],
+    });
+    return token.rows[0];
+  }
+}
+
+async function activateUserByUserId(userId) {
+  const activatedUser = await user.setFeatures(userId, ["create:session"]);
+  return activatedUser;
 }
 
 const activation = {
   sendEmailToUser,
   create,
   findOneValidById,
+  markAsUsed,
+  activateUserByUserId,
 };
 
 export default activation;
