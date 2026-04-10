@@ -1,6 +1,6 @@
 import orchestrator from "tests/orchestrator.js";
 import activation from "models/activation.js";
-
+import user from "models/user.js";
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDatabase();
@@ -9,6 +9,8 @@ beforeAll(async () => {
 });
 
 describe("Use case: Registration Flow (all successful)", () => {
+  let createUserResponseBody;
+  let activationToken;
   test("Create user account", async () => {
     const createUserResponse = await fetch(
       "http://localhost:3000/api/v1/users",
@@ -27,7 +29,7 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     expect(createUserResponse.status).toBe(201);
 
-    const createUserResponseBody = await createUserResponse.json();
+    createUserResponseBody = await createUserResponse.json();
 
     expect(createUserResponseBody).toEqual({
       id: createUserResponseBody.id,
@@ -38,10 +40,12 @@ describe("Use case: Registration Flow (all successful)", () => {
       created_at: createUserResponseBody.created_at,
       updated_at: createUserResponseBody.updated_at,
     });
+  });
 
+  test("Receive activation email", async () => {
     const lastEmail = await orchestrator.getLastEmail();
 
-    const activationToken = await orchestrator.getValidToken(lastEmail.text);
+    activationToken = await orchestrator.getValidToken(lastEmail.text);
 
     expect(lastEmail.sender).toEqual("<contato@tabracing.com.br>");
     expect(lastEmail.recipients[0]).toEqual("<registration@flow.com>");
@@ -51,9 +55,22 @@ describe("Use case: Registration Flow (all successful)", () => {
     expect(activationToken.user_id).toEqual(createUserResponseBody.id);
   });
 
-  test("Receive activation email", async () => {});
+  test("Activate account", async () => {
+    const activationResponse = await fetch(
+      `http://localhost:3000/api/v1/activations/${activationToken.id}`,
+      {
+        method: "PATCH",
+      },
+    );
 
-  test("Activate account", async () => {});
+    expect(activationResponse.status).toBe(200);
+
+    const activationResponseBody = await activationResponse.json();
+
+    expect(Date.parse(activationResponseBody.used_at)).not.toBeNaN();
+    const activatedUser = await user.findOneByUsername("RegistrationFlow");
+    expect(activatedUser.features).toEqual(["create:session"]);
+  });
 
   test("Login", async () => {});
 
