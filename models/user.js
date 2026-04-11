@@ -220,7 +220,6 @@ async function update(username, data) {
 }
 
 async function setFeatures(userId, features) {
-  console.log(userId);
   const updatedUser = await runUpdateQuery(userId, features);
   return updatedUser;
 
