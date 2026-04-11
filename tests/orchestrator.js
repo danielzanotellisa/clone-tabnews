@@ -48,6 +48,10 @@ async function clearDatabase() {
   await database.query("DROP SCHEMA PUBLIC CASCADE; CREATE SCHEMA PUBLIC;");
 }
 
+async function activateUser(user) {
+  await activation.activateUserByUserId(user.id);
+}
+
 async function createUser(userObject) {
   return await user.create({
     username:
@@ -106,6 +110,7 @@ const orchestrator = {
   deleteEmails,
   getLastEmail,
   getValidToken,
+  activateUser,
 };
 
 export default orchestrator;
