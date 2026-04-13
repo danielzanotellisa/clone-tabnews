@@ -88,7 +88,7 @@ async function findOneById(id) {
     const user = await database.query({
       text: `
       SELECT
-        id, username, email, created_at, updated_at
+        *
       FROM
         users
       WHERE
