@@ -49,7 +49,7 @@ async function clearDatabase() {
 }
 
 async function activateUser(user) {
-  await activation.activateUserByUserId(user.id);
+  return await activation.activateUserByUserId(user.id);
 }
 
 async function createUser(userObject) {
@@ -101,6 +101,12 @@ async function getLastEmail() {
 
   return lastEmailItem;
 }
+
+async function grantFeaturesToUser(userId, features) {
+  const foundUser = await user.findOneById(userId);
+  await user.setFeatures(userId, features);
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -111,6 +117,7 @@ const orchestrator = {
   getLastEmail,
   getValidToken,
   activateUser,
+  grantFeaturesToUser,
 };
 
 export default orchestrator;
