@@ -1,5 +1,5 @@
 function can(userTryingToRequest, feature) {
-  return userTryingToRequest.features.includes(feature);
+  return userTryingToRequest?.features?.includes(feature);
 }
 
 const authorization = {
