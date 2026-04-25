@@ -32,6 +32,7 @@ describe("POST to api/v1/users", () => {
         username: "daniel",
         email: "teste@email.com",
         password: responseBody.password,
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -125,6 +126,30 @@ describe("POST to api/v1/users", () => {
           "Campos obrigatórios precisam ser preenchidos: nome de usuário, e-mail e senha",
         status_code: 422,
       });
+    });
+  });
+
+  describe("Default user", () => {
+    test("With unique and valid data", async () => {
+      const user1 = await orchestrator.createUser();
+      await orchestrator.activateUser(user1);
+
+      const sessionObject = await orchestrator.createSession(user1.id);
+
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${sessionObject.token}`,
+        },
+        body: JSON.stringify({
+          username: "daniel2",
+          email: "daniel2@email.com",
+          password: "123password",
+        }),
+      });
+
+      expect(response.status).toBe(403);
     });
   });
 });

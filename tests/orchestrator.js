@@ -4,6 +4,7 @@ import database from "infra/database.js";
 import migrator from "models/migrator.js";
 import user from "models/user.js";
 import session from "models/session.js";
+import activation from "models/activation.js";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
@@ -47,6 +48,10 @@ async function clearDatabase() {
   await database.query("DROP SCHEMA PUBLIC CASCADE; CREATE SCHEMA PUBLIC;");
 }
 
+async function activateUser(user) {
+  return await activation.activateUserByUserId(user.id);
+}
+
 async function createUser(userObject) {
   return await user.create({
     username:
@@ -66,10 +71,26 @@ async function deleteEmails() {
   });
 }
 
+async function getValidToken(email) {
+  const token = email.match(/(?<==)([a-z-A-Z-0-9]+)/i)[0];
+
+  if (!token) {
+    return null;
+  }
+  token;
+  const validToken = await activation.findOneValidById(token);
+  validToken;
+  return validToken;
+}
+
 async function getLastEmail() {
   const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
   const emailListBody = await emailListResponse.json();
   const lastEmailItem = emailListBody.pop();
+
+  if (!lastEmailItem) {
+    return null;
+  }
 
   const lastEmailText = await fetch(
     `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
@@ -80,6 +101,12 @@ async function getLastEmail() {
 
   return lastEmailItem;
 }
+
+async function grantFeaturesToUser(userId, features) {
+  await user.findOneById(userId);
+  await user.setFeatures(userId, features);
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -88,6 +115,9 @@ const orchestrator = {
   createSession,
   deleteEmails,
   getLastEmail,
+  getValidToken,
+  activateUser,
+  grantFeaturesToUser,
 };
 
 export default orchestrator;

@@ -11,11 +11,12 @@ beforeAll(async () => {
 describe("GET to /api/v1/user", () => {
   describe("Default user", () => {
     test("With valid session", async () => {
-      const createdUser = await orchestrator.createUser({
+      let createdUser = await orchestrator.createUser({
         username: "userWithValidSession",
       });
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const activatedUser = await orchestrator.activateUser(createdUser);
+      const sessionObject = await orchestrator.createSession(activatedUser.id);
 
       const response = await fetch("http://localhost:3000/api/v1/user", {
         headers: {
@@ -29,8 +30,10 @@ describe("GET to /api/v1/user", () => {
         id: createdUser.id,
         username: createdUser.username,
         email: createdUser.email,
+        features: activatedUser.features,
+        password: createdUser.password,
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.updated_at.toISOString(),
+        updated_at: activatedUser.updated_at.toISOString(),
       });
 
       const renewedSessionObject = await session.findOneValidByToken(
