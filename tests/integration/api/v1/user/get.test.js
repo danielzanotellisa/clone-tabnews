@@ -1,7 +1,6 @@
 import orchestrator from "tests/orchestrator.js";
 import session from "models/session.js";
 import setCookieParser from "set-cookie-parser";
-import { password } from "pg/lib/defaults";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();

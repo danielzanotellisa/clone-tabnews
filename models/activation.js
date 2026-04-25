@@ -1,7 +1,6 @@
 import email from "infra/email.js";
 import database from "infra/database.js";
 import webserver from "infra/webserver.js";
-import { run } from "jest";
 import user from "models/user.js";
 import { ForbiddenError, NotFoundError } from "infra/errors.js";
 import authorization from "./authorization";

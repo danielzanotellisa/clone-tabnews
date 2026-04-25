@@ -72,7 +72,7 @@ async function deleteEmails() {
 }
 
 async function getValidToken(email) {
-  const token = email.match(/(?<==)([a-z-A-Z-0-9\-]+)/i)[0];
+  const token = email.match(/(?<==)([a-z-A-Z-0-9]+)/i)[0];
 
   if (!token) {
     return null;
@@ -103,7 +103,7 @@ async function getLastEmail() {
 }
 
 async function grantFeaturesToUser(userId, features) {
-  const foundUser = await user.findOneById(userId);
+  await user.findOneById(userId);
   await user.setFeatures(userId, features);
 }
 
